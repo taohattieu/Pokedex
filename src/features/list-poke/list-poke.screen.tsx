@@ -1,32 +1,84 @@
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import { useNavigation } from '@react-navigation/native'
-import DetailsPoke from '../list-details-poke/list-details-poke.screen';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, TextInput, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import Search from 'react-native-vector-icons/EvilIcons';
-import { SearchBar } from '@rneui/themed';
+
+interface PokeProps {
+  id: number;
+  name: string;
+  image: string;
+}
+
 const ListPoke = () => {
   const { navigate } = useNavigation();
+  const [pokes, setPokes] = useState<PokeProps[]>([]);
+
+  useEffect(() => {
+    axios
+      .get("https://pokeapi.co/api/v2/pokemon?offset=0&limit=34")
+      .then((response) => {
+        const results = response.data.results;
+        const formattedPokes = results.map((poke: any, index: number) => ({
+          id: index + 1,
+          name: poke.name,
+          image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${index + 1}.png`,
+        }));
+        setPokes(formattedPokes);
+      })
+      .catch((error) => {
+        console.error("Error :", error);
+      });
+  }, []);
+
+  const renderItem = ({ item }: { item: PokeProps }) => (
+    <View style={{}}>
+    <TouchableOpacity>
+      <View style={{
+    borderRadius: 10,
+    borderWidth: 0.5,
+    marginVertical: 16,
+    marginHorizontal: 14,
+    width: 104,
+    height: 115,
+    backgroundColor: '#ffffff'
+    }}>
+        <Text style={{
+          textAlign: 'right',
+          marginRight: 10,
+        }}>#{item.id}</Text>
+        <Image source={{ uri: item.image }} 
+        style={{
+    width: 72,
+    height: 72,
+    marginLeft: 16,}} />
+        <Text style={{textAlign: 'center', textTransform: 'capitalize'}}>{item.name}</Text>
+        <View 
+        style={{backgroundColor: '#ff0', position: 'absolute'}}
+        ></View>
+      </View>
+    </TouchableOpacity>
+    </View>
+  );
+
   return (
     <View style={{ flex: 1, backgroundColor: '#dc0a2d' }}>
-      <View style={{ flex: 0.5, }}>
+      <View style={{flex: 1}}>
         <Image source={require('../../pics/Logo.png')} style={{ marginVertical: 16, marginHorizontal: 16 }} />
 
         <View>
 
           <View style={{ flexDirection: 'row' }}>
-            <View style={{ flex: 1, backgroundColor: '#ff0'}}>
-            <TextInput
-              placeholder='Search'
-              style={{
-                marginHorizontal: 20,
-                paddingLeft: 20,
-                backgroundColor: '#ffffff',
-                flex: 0.7,
-                padding: 8,
-                marginTop: 10,
-              }}>
+            <View style={{ flex: 1, backgroundColor: '#ffffff', marginHorizontal: 16, borderRadius: 25 }}>
+              <TextInput
+                placeholder='Search'
+                style={{
+                  marginHorizontal: 20,
+                  paddingLeft: 20,
+                  backgroundColor: '#ffffff',
+                }}>
 
-            </TextInput>
+              </TextInput>
             </View>
             <Search name="search" size={30}
               style={{
@@ -44,19 +96,22 @@ const ListPoke = () => {
               marginRight: 16,
             }}><Text style={{ fontSize: 30, color: '#dc0a2d', textAlign: 'center', textAlignVertical: 'center' }}>#</Text>
             </TouchableOpacity>
-          </View>
         </View>
       </View>
 
-      <View style={{
-        flex: 2.7,
-        backgroundColor: '#ffffff',
-        marginVertical: 16,
-        marginHorizontal: 8,
-        borderRadius: 10
-      }}>
-
-      </View>
+      <FlatList
+        data={pokes}
+        numColumns={3}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
+        style={{ 
+          backgroundColor: '#ffffff', 
+          marginVertical: 16,
+          marginHorizontal: 10,
+          borderRadius: 10 
+        }}
+      />
+    </View>
     </View>
   )
 }
