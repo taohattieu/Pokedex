@@ -5,8 +5,8 @@
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
-      android:icon="@drawable/images"
-      android:roundIcon="@drawable/images"
+      android:icon="@drawable/pikachu"
+      android:roundIcon="@drawable/pikachu"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
       <activity
