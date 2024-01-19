@@ -3,6 +3,7 @@ import { View, Text, Image, TextInput, TouchableOpacity, FlatList, StyleSheet } 
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import Search from 'react-native-vector-icons/EvilIcons';
+import DetailsPoke from '../list-details-poke/list-details-poke.screen';
 
 interface PokeProps {
   id: number;
@@ -11,12 +12,12 @@ interface PokeProps {
 }
 
 const ListPoke = () => {
-  const { navigate } = useNavigation();
+  const { navigate } = useNavigation<any>();
   const [pokes, setPokes] = useState<PokeProps[]>([]);
 
   useEffect(() => {
     axios
-      .get("https://pokeapi.co/api/v2/pokemon?offset=0&limit=34")
+      .get("https://pokeapi.co/api/v2/pokemon?offset=0&limit=95")
       .then((response) => {
         const results = response.data.results;
         const formattedPokes = results.map((poke: any, index: number) => ({
@@ -33,37 +34,51 @@ const ListPoke = () => {
 
   const renderItem = ({ item }: { item: PokeProps }) => (
     <View style={{}}>
-    <TouchableOpacity>
-      <View style={{
-    borderRadius: 10,
-    borderWidth: 0.5,
-    marginVertical: 16,
-    marginHorizontal: 14,
-    width: 104,
-    height: 115,
-    backgroundColor: '#ffffff'
-    }}>
-        <Text style={{
-          textAlign: 'right',
-          marginRight: 10,
-        }}>#{item.id}</Text>
-        <Image source={{ uri: item.image }} 
-        style={{
-    width: 72,
-    height: 72,
-    marginLeft: 16,}} />
-        <Text style={{textAlign: 'center', textTransform: 'capitalize'}}>{item.name}</Text>
-        <View 
-        style={{backgroundColor: '#ff0', position: 'absolute'}}
-        ></View>
-      </View>
-    </TouchableOpacity>
+      <TouchableOpacity
+      onPress={() => {
+        navigate('DetailsPoke', {id: item.id})
+      }}
+    >
+        <View style={{
+          borderRadius: 10,
+          borderWidth: 0.5,
+          marginVertical: 16,
+          marginHorizontal: 14,
+          width: 104,
+          height: 115,
+          backgroundColor: '#ffffff'
+        }}>
+          <Text style={{
+            textAlign: 'right',
+            marginRight: 10,
+          }}>#{item.id}</Text>
+          <Image source={{ uri: item.image }}
+            style={{
+              width: 72,
+              height: 72,
+              marginLeft: 16,
+            }} />
+          <Text style={{ textAlign: 'center', textTransform: 'capitalize' }}>{item.name}</Text>
+          <View
+            style={{ 
+              backgroundColor: '#efefef', 
+              position: 'absolute',
+              bottom: 0,
+              borderRadius: 10,         
+              width: '100%', 
+              height: 50, 
+              zIndex: -1,
+              opacity: 1 
+            }}
+          ></View>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={{ flex: 1, backgroundColor: '#dc0a2d' }}>
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <Image source={require('../../pics/Logo.png')} style={{ marginVertical: 16, marginHorizontal: 16 }} />
 
         <View>
@@ -96,22 +111,22 @@ const ListPoke = () => {
               marginRight: 16,
             }}><Text style={{ fontSize: 30, color: '#dc0a2d', textAlign: 'center', textAlignVertical: 'center' }}>#</Text>
             </TouchableOpacity>
+          </View>
         </View>
-      </View>
 
-      <FlatList
-        data={pokes}
-        numColumns={3}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        style={{ 
-          backgroundColor: '#ffffff', 
-          marginVertical: 16,
-          marginHorizontal: 10,
-          borderRadius: 10 
-        }}
-      />
-    </View>
+        <FlatList
+          data={pokes}
+          numColumns={3}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          style={{
+            backgroundColor: '#ffffff',
+            marginVertical: 16,
+            marginHorizontal: 10,
+            borderRadius: 10
+          }}
+        />
+      </View>
     </View>
   )
 }
