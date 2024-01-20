@@ -5,8 +5,8 @@
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
-      android:icon="@drawable/pikachu"
-      android:roundIcon="@drawable/pikachu"
+      android:icon="@drawable/egg"
+      android:roundIcon="@drawable/egg"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
       <activity
