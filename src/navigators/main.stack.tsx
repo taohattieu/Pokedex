@@ -10,7 +10,7 @@ const Stack = createNativeStackNavigator();
 
 const MainStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true }}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ListPoke" component={ListPoke} />
       <Stack.Screen name="DetailsPoke" component={DetailsPoke} />
     </Stack.Navigator>
