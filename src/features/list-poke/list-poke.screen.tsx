@@ -25,7 +25,7 @@ const ListPoke = () => {
 
   useEffect(() => {
     axios
-      .get('https://pokeapi.co/api/v2/pokemon?offset=0&limit=95')
+      .get('https://pokeapi.co/api/v2/pokemon?offset=0&limit=1302')
       .then(response => {
         const results = response.data.results;
         const formattedPokes = results.map((poke: any, index: number) => ({
