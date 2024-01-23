@@ -1,97 +1,74 @@
-import React, {ReactNode, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
   Image,
-  StyleSheet,
-  ActivityIndicator,
   TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import axios from 'axios';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/AntDesign';
-import Svg, {Circle} from 'react-native-svg';
 import {Bar} from 'react-native-progress';
-
-// interface DetailsPokeProps {
-//   route: {
-//     params: {
-//       pokeDetails: {
-//         types: any;
-//         sprites: any;
-//         weight: number;
-//         height: number;
-//         id: number;
-//         moves: any;
-//         name: string;
-//         image: string;
-//       };
-//     };
-//   };
-// }
-
-// interface PokeDetails {
-//   id: number;
-//   name: string;
-//   moves: string[];
-//   types: string[];
-//   weight: number;
-//   height: number;
-//   sprites: {
-//     front_default: string;
-//   };
-// }
 
 const DetailsPoke = () => {
   const navigation = useNavigation<any>();
-  // khoi tao useRoute
   const route = useRoute();
-  // console.log(route.params)
-  // const { pokeDetails } = route.params;
-  const [PokeDetails, setPokeDetails] = useState<PokeDetails>();
+  const [PokeDetails, setPokeDetails] = useState<any>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentIndex, setCurrentIndex] = useState<number>(route.params.id);
+
+  const fetchPokeDetails = async (id: number) => {
+    try {
+      const response = await axios.get(
+        `https://pokeapi.co/api/v2/pokemon/${id}`,
+      );
+      const data = response.data;
+
+      const moves = data.moves.slice(0, 2).map((move: any) => move.move.name);
+
+      setPokeDetails({
+        id: data.id,
+        name: data.name,
+        moves,
+        types: data.types.map((type: any) => type.type.name),
+        weight: data.weight,
+        height: data.height,
+        sprites: {
+          front_default: data.sprites.other['official-artwork'].front_default,
+        },
+        baseStats: {
+          HP: data.stats[0].base_stat,
+          ATK: data.stats[1].base_stat,
+          DEF: data.stats[2].base_stat,
+          SATK: data.stats[3].base_stat,
+          SDEF: data.stats[4].base_stat,
+          SPD: data.stats[5].base_stat,
+        },
+      });
+    } catch (error) {
+      console.log('err', error);
+      setError('Error message');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchPokeDetails = async () => {
-      try {
-        const response = await axios.get(
-          `https://pokeapi.co/api/v2/pokemon/${route.params.id}`,
-        );
-        // console.log('api', response.data)
-        const data = response.data;
+    fetchPokeDetails(currentIndex);
+  }, [currentIndex]);
 
-        const moves = data.moves.slice(0, 2).map((move: any) => move.move.name);
+  const handleNext = () => {
+    const nextIndex = currentIndex + 1;
+    setCurrentIndex(nextIndex);
+  };
 
-        setPokeDetails({
-          id: data.id,
-          name: data.name,
-          moves,
-          types: data.types.map((type: any) => type.type.name),
-          weight: data.weight,
-          height: data.height,
-          sprites: {
-            front_default: data.sprites.other['official-artwork'].front_default,
-          },
-          baseStats: {
-            HP: data.stats[0].base_stat,
-            ATK: data.stats[1].base_stat,
-            DEF: data.stats[2].base_stat,
-            SATK: data.stats[3].base_stat,
-            SDEF: data.stats[4].base_stat,
-            SPD: data.stats[5].base_stat,
-          },
-        });
-      } catch (error) {
-        console.log('err', error);
-        setError('Error message');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPokeDetails();
-  }, []);
+  const handleBack = () => {
+    const prevIndex = currentIndex - 1;
+    setCurrentIndex(prevIndex);
+  };
 
   return (
     <View style={{flex: 1, justifyContent: 'center'}}>
@@ -101,7 +78,7 @@ const DetailsPoke = () => {
         <Text>{error}</Text>
       ) : (
         <View style={{flex: 1, backgroundColor: '#6493eb'}}>
-          <View style={{flexDirection: 'row', flex: 0.15}}>
+          <View style={{flexDirection: 'row', flex: 0.5}}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon
                 name="arrowleft"
@@ -113,7 +90,6 @@ const DetailsPoke = () => {
                 }}
               />
             </TouchableOpacity>
-           
             <View
               style={{
                 marginVertical: 16,
@@ -121,9 +97,15 @@ const DetailsPoke = () => {
                 width: 200,
                 height: 200,
               }}>
-                
               <Image source={require('../../pics/pokeballs.png')} />
-              
+              <View style={{bottom: 125, right: 60}}>
+                <Image
+                  source={{
+                    uri: PokeDetails?.sprites.front_default,
+                  }}
+                  style={{width: 200, height: 200}}
+                />
+              </View>
             </View>
 
             <Text
@@ -142,31 +124,29 @@ const DetailsPoke = () => {
                 marginVertical: 10,
                 color: '#fff',
                 fontSize: 25,
-                right: 20
+                right: 20,
               }}>
               #{PokeDetails?.id}
             </Text>
-            <View style={{ right: 60}}>
-              <TouchableOpacity>
-              <Icon name='left' size={30}/>
-            </TouchableOpacity>
+            <View style={{right: 350, marginTop: 200}}>
+              <TouchableOpacity onPress={handleBack}>
+                <Icon name="left" size={30} />
+              </TouchableOpacity>
             </View>
-            <View style={{ right: 50}}>
-            <TouchableOpacity>
-              <Icon name='right' size={30}/>
-            </TouchableOpacity>
+            <View style={{right: 100, marginTop: 200}}>
+              <TouchableOpacity onPress={handleNext}>
+                <Icon name="right" size={30} />
+              </TouchableOpacity>
             </View>
           </View>
-          <View style={{alignItems: 'center', zIndex: 1, }}>
+          {/* <View style={{ alignItems: 'center', zIndex: 1 }}>
             <Image
               source={{
                 uri: PokeDetails?.sprites.front_default,
               }}
-              style={{width: 200, height: 200}}
+              style={{ width: 200, height: 200 }}
             />
-            
-          </View>
-          
+          </View> */}
           <View
             style={{
               flex: 1,
@@ -175,17 +155,15 @@ const DetailsPoke = () => {
               marginHorizontal: 10,
               marginTop: -50,
               marginBottom: 10,
+              zIndex: -1,
             }}>
-              
             <View
               style={{
-                // marginHorizontal: 16,
-                // marginVertical: 16,
                 alignItems: 'center',
               }}>
               <Text
                 style={{
-                  marginTop: 50,
+                  marginTop: 60,
                   textTransform: 'capitalize',
                   fontWeight: 'bold',
                   borderRadius: 10,
@@ -195,18 +173,25 @@ const DetailsPoke = () => {
                 {PokeDetails?.types.join(', ')}
               </Text>
 
-              <Text style={{fontSize: 16, color: '#6493eb', fontWeight: 'bold', marginTop: 10}}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: '#6493eb',
+                  fontWeight: 'bold',
+                  marginVertical: 20,
+                }}>
                 About:
               </Text>
               <View
                 style={{
                   flexDirection: 'row',
-                  // justifyContent: 'space-between',
-                  // backgroundColor: '#ff0',
                   marginTop: 10,
                 }}>
-                <View style={{flex: 0.8}}>
-                  <Image style={{left: 8, top: 2}} source={require('../../pics/weight.png')} />
+                <View style={{flex: 1}}>
+                  <Image
+                    style={{left: 20, top: 2}}
+                    source={require('../../pics/weight.png')}
+                  />
                   <View style={{position: 'absolute', alignSelf: 'center'}}>
                     <Text>{PokeDetails?.weight / 10} kg</Text>
                   </View>
@@ -214,8 +199,11 @@ const DetailsPoke = () => {
                   <Text style={{alignSelf: 'center'}}>Weight</Text>
                 </View>
                 <Image source={require('../../pics/divider.png')} />
-                <View style={{flex: 0.8}}>
-                  <Image style={{left: 8, top: 2}} source={require('../../pics/straighten.png')} />
+                <View style={{flex: 1}}>
+                  <Image
+                    style={{left: 20, top: 2}}
+                    source={require('../../pics/straighten.png')}
+                  />
                   <View style={{position: 'absolute', alignSelf: 'center'}}>
                     <Text>{PokeDetails?.height / 10} m</Text>
                   </View>
@@ -223,16 +211,50 @@ const DetailsPoke = () => {
                   <Text style={{alignSelf: 'center'}}>Height</Text>
                 </View>
                 <Image source={require('../../pics/divider.png')} />
-                <View style={{marginLeft: 20, flex: 1.5}}>
-                  <View>
-                    <Text>{PokeDetails?.moves.join(',')}</Text>
+                <View style={{marginLeft: 20, flex: 1}}>
+                  <View style={{alignSelf: 'center'}}>
+                    <Text>{PokeDetails?.moves.join('\n')}</Text>
                   </View>
-                  <Text></Text>
                   <Text style={{alignSelf: 'center'}}>Moves</Text>
                 </View>
               </View>
+              
+              <ScrollView style={{height: 100,}}>
+                <Text>
+                  It has a preference for hot things. When it rains, steam is
+                  said to spout from the tip of its tail.It has a preference for hot things. When it rains, steam is
+                  said to spout from the tip of its tail.
+                  It has a preference for hot things. When it rains, steam is
+                  said to spout from the tip of its tail.
+                  It has a preference for hot things. When it rains, steam is
+                  said to spout from the tip of its tail.
+                  It has a preference for hot things. When it rains, steam is
+                  It has a preference for hot things. When it rains, steam is
+                  said to spout from the tip of its tail.It has a preference for hot things. When it rains, steam is
+                  said to spout from the tip of its tail.
+                  It has a preference for hot things. When it rains, steam is
+                  said to spout from the tip of its tail.
+                </Text>
+                <Text>
+                  It has a preference for hot things. When it rains, steam is
+                  said to spout from the tip of its tail.It has a preference for hot things. When it rains, steam is
+                  said to spout from the tip of its tail.
+                  It has a preference for hot things. When it rains, steam is
+                  said to spout from the tip of its tail.
+                  It has a preference for hot things. When it rains, steam is
+                  said to spout from the tip of its tail.
+                  It has a preference for hot things. When it rains, steam is
+ 
+                </Text>
+              </ScrollView>
 
-              <Text style={{fontSize: 16, color: '#6493eb', fontWeight: 'bold', marginTop: 10}}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: '#6493eb',
+                  fontWeight: 'bold',
+                  marginTop: 10,
+                }}>
                 Base Stats:
               </Text>
               <View style={{marginTop: 10}}>
@@ -246,7 +268,10 @@ const DetailsPoke = () => {
                         justifyContent: 'space-between',
                         marginBottom: 8,
                       }}>
-                      <Text>{`${stat}: ${String(value).padStart(3,'0',)}`}</Text>
+                      <Text>{`${stat}: ${String(value).padStart(
+                        3,
+                        '0',
+                      )}`}</Text>
                       <Bar
                         progress={value / 250}
                         width={270}
