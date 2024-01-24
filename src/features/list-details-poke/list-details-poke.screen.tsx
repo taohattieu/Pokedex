@@ -19,6 +19,7 @@ const DetailsPoke = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(route.params.id);
+  const [speciesDetails, setSpeciesDetails] = useState<string | null>(null);
 
   const fetchPokeDetails = async (id: number) => {
     try {
@@ -28,7 +29,6 @@ const DetailsPoke = () => {
       const data = response.data;
 
       const moves = data.moves.slice(0, 2).map((move: any) => move.move.name);
-
       setPokeDetails({
         id: data.id,
         name: data.name,
@@ -56,8 +56,26 @@ const DetailsPoke = () => {
     }
   };
 
+  const fetchSpeciesDetails = async (id: number) => {
+    try {
+      const response = await axios.get(
+        `https://pokeapi.co/api/v2/pokemon-species/${id}`,
+      );
+      const data = response.data;
+      const flavorText = data.flavor_text_entries.filter((entry : any) => entry.language.name === 'en')[0]?.flavor_text.replace(
+        /\n/g,
+        ' ',
+      );
+      setSpeciesDetails(flavorText);
+    } catch (error) {
+      console.log('err', error);
+      setError('Error message');
+    }
+  };
+
   useEffect(() => {
     fetchPokeDetails(currentIndex);
+    fetchSpeciesDetails(currentIndex);
   }, [currentIndex]);
 
   const handleNext = () => {
@@ -77,7 +95,9 @@ const DetailsPoke = () => {
       ) : error ? (
         <Text>{error}</Text>
       ) : (
-        <View style={{flex: 1, backgroundColor: '#6493eb'}}>
+        <View style={{flex: 1, 
+        backgroundColor: '#6493eb'
+        }}>
           <View style={{flexDirection: 'row', flex: 0.5}}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon
@@ -130,12 +150,12 @@ const DetailsPoke = () => {
             </Text>
             <View style={{right: 350, marginTop: 200}}>
               <TouchableOpacity onPress={handleBack}>
-                <Icon name="left" size={30} />
+                <Icon name="left" size={30} style={{color: '#ffffff'}} />
               </TouchableOpacity>
             </View>
             <View style={{right: 100, marginTop: 200}}>
               <TouchableOpacity onPress={handleNext}>
-                <Icon name="right" size={30} />
+                <Icon name="right" size={30} style={{color: '#ffffff'}} />
               </TouchableOpacity>
             </View>
           </View>
@@ -161,17 +181,26 @@ const DetailsPoke = () => {
               style={{
                 alignItems: 'center',
               }}>
-              <Text
-                style={{
-                  marginTop: 60,
-                  textTransform: 'capitalize',
-                  fontWeight: 'bold',
-                  borderRadius: 10,
-                  width: 100,
-                  height: 25,
-                }}>
-                {PokeDetails?.types.join(', ')}
-              </Text>
+              <View style={{flexDirection: 'row'}}>
+                {PokeDetails?.types?.map((p: string) => (
+                  <Text
+                    key={p}
+                    style={{
+                      marginTop: 60,
+                      marginHorizontal: 10,
+                      textTransform: 'capitalize',
+                      fontWeight: 'bold',
+                      borderRadius: 15,
+                      backgroundColor: '#f0f',
+                      textAlign: 'center',
+                      textAlignVertical: 'center',
+                      width: 70,
+                      height: 25,
+                    }}>
+                    {p}
+                  </Text>
+                ))}
+              </View>
 
               <Text
                 style={{
@@ -186,6 +215,7 @@ const DetailsPoke = () => {
                 style={{
                   flexDirection: 'row',
                   marginTop: 10,
+                  marginBottom: 20,
                 }}>
                 <View style={{flex: 1}}>
                   <Image
@@ -218,33 +248,16 @@ const DetailsPoke = () => {
                   <Text style={{alignSelf: 'center'}}>Moves</Text>
                 </View>
               </View>
-              
-              <ScrollView style={{height: 100,}}>
-                <Text>
-                  It has a preference for hot things. When it rains, steam is
-                  said to spout from the tip of its tail.It has a preference for hot things. When it rains, steam is
-                  said to spout from the tip of its tail.
-                  It has a preference for hot things. When it rains, steam is
-                  said to spout from the tip of its tail.
-                  It has a preference for hot things. When it rains, steam is
-                  said to spout from the tip of its tail.
-                  It has a preference for hot things. When it rains, steam is
-                  It has a preference for hot things. When it rains, steam is
-                  said to spout from the tip of its tail.It has a preference for hot things. When it rains, steam is
-                  said to spout from the tip of its tail.
-                  It has a preference for hot things. When it rains, steam is
-                  said to spout from the tip of its tail.
-                </Text>
-                <Text>
-                  It has a preference for hot things. When it rains, steam is
-                  said to spout from the tip of its tail.It has a preference for hot things. When it rains, steam is
-                  said to spout from the tip of its tail.
-                  It has a preference for hot things. When it rains, steam is
-                  said to spout from the tip of its tail.
-                  It has a preference for hot things. When it rains, steam is
-                  said to spout from the tip of its tail.
-                  It has a preference for hot things. When it rains, steam is
- 
+
+              <ScrollView
+                style={{
+                  width: '100%',
+                  height: 60,
+
+                  marginVertical: 16,
+                }}>
+                <Text style={{marginHorizontal: 16, marginVertical: 10}}>
+                  {speciesDetails}
                 </Text>
               </ScrollView>
 
@@ -253,7 +266,7 @@ const DetailsPoke = () => {
                   fontSize: 16,
                   color: '#6493eb',
                   fontWeight: 'bold',
-                  marginTop: 10,
+                  marginTop: 20,
                 }}>
                 Base Stats:
               </Text>
