@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  Alert,
 } from 'react-native';
 import axios from 'axios';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -50,7 +51,8 @@ const DetailsPoke = () => {
       });
     } catch (error) {
       console.log('err', error);
-      setError('Error message');
+      // setError('Error message');
+      Alert.alert('Error', 'Undefined')
     } finally {
       setIsLoading(false);
     }
@@ -62,14 +64,13 @@ const DetailsPoke = () => {
         `https://pokeapi.co/api/v2/pokemon-species/${id}`,
       );
       const data = response.data;
-      const flavorText = data.flavor_text_entries.filter((entry : any) => entry.language.name === 'en')[0]?.flavor_text.replace(
-        /\n/g,
-        ' ',
-      );
+      const flavorText = data.flavor_text_entries
+        .filter((entry: any) => entry.language.name === 'en')[0]
+        ?.flavor_text.replace(/\n/g, ' ');
       setSpeciesDetails(flavorText);
     } catch (error) {
       console.log('err', error);
-      setError('Error message');
+      // setError('Error message');
     }
   };
 
@@ -95,9 +96,7 @@ const DetailsPoke = () => {
       ) : error ? (
         <Text>{error}</Text>
       ) : (
-        <View style={{flex: 1, 
-        backgroundColor: '#6493eb'
-        }}>
+        <View style={{flex: 1, backgroundColor: '#6493eb'}}>
           <View style={{flexDirection: 'row', flex: 0.5}}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon
