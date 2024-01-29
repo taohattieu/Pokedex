@@ -51,8 +51,7 @@ const DetailsPoke = () => {
       });
     } catch (error) {
       console.log('err', error);
-      // setError('Error message');
-      Alert.alert('Error', 'Undefined')
+      Alert.alert('Error', 'Undefined');
     } finally {
       setIsLoading(false);
     }
@@ -70,7 +69,6 @@ const DetailsPoke = () => {
       setSpeciesDetails(flavorText);
     } catch (error) {
       console.log('err', error);
-      // setError('Error message');
     }
   };
 
@@ -89,6 +87,49 @@ const DetailsPoke = () => {
     setCurrentIndex(prevIndex);
   };
 
+  const getTypeColor = (type: string): string => {
+    switch (type) {
+      case 'normal':
+        return '#A8A878';
+      case 'fighting':
+        return '#C03028';
+      case 'flying':
+        return '#A890F0';
+      case 'poison':
+        return '#A040A0';
+      case 'ground':
+        return '#CC9966';
+      case 'rock':
+        return '#b69e31';
+      case 'bug':
+        return '#a7b723';
+      case 'ghost':
+        return '#70559b';
+      case 'steel':
+        return '#b7b9d0';
+      case 'fire':
+        return '#f57d31';
+      case 'water':
+        return '#6493eb';
+      case 'grass':
+        return '#74cb48';
+      case 'electric':
+        return '#f9cf30';
+      case 'psychic':
+        return '#fb5584';
+      case 'ice':
+        return '#CCCCCC';
+      case 'dragon':
+        return '#CC0000';
+      case 'dark':
+        return '#999999';
+      case 'fairy':
+        return '#FFCCCC';
+      default:
+        return '#B8B8D0';
+    }
+  };
+
   return (
     <View style={{flex: 1, justifyContent: 'center'}}>
       {isLoading ? (
@@ -96,7 +137,11 @@ const DetailsPoke = () => {
       ) : error ? (
         <Text>{error}</Text>
       ) : (
-        <View style={{flex: 1, backgroundColor: '#6493eb'}}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: getTypeColor(PokeDetails?.types[0]),
+          }}>
           <View style={{flexDirection: 'row', flex: 0.5}}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon
@@ -158,14 +203,7 @@ const DetailsPoke = () => {
               </TouchableOpacity>
             </View>
           </View>
-          {/* <View style={{ alignItems: 'center', zIndex: 1 }}>
-            <Image
-              source={{
-                uri: PokeDetails?.sprites.front_default,
-              }}
-              style={{ width: 200, height: 200 }}
-            />
-          </View> */}
+
           <View
             style={{
               flex: 1,
@@ -190,7 +228,7 @@ const DetailsPoke = () => {
                       textTransform: 'capitalize',
                       fontWeight: 'bold',
                       borderRadius: 15,
-                      backgroundColor: '#f0f',
+                      backgroundColor: getTypeColor(p),
                       textAlign: 'center',
                       textAlignVertical: 'center',
                       width: 70,
@@ -203,8 +241,8 @@ const DetailsPoke = () => {
 
               <Text
                 style={{
-                  fontSize: 16,
-                  color: '#6493eb',
+                  fontSize: 20,
+                  color: getTypeColor(PokeDetails?.types[0]),
                   fontWeight: 'bold',
                   marginVertical: 20,
                 }}>
@@ -249,12 +287,7 @@ const DetailsPoke = () => {
               </View>
 
               <ScrollView
-                style={{
-                  width: '100%',
-                  height: 60,
-
-                  marginVertical: 16,
-                }}>
+                style={{width: '100%', height: 60, marginVertical: 16}}>
                 <Text style={{marginHorizontal: 16, marginVertical: 10}}>
                   {speciesDetails}
                 </Text>
@@ -262,8 +295,8 @@ const DetailsPoke = () => {
 
               <Text
                 style={{
-                  fontSize: 16,
-                  color: '#6493eb',
+                  fontSize: 20,
+                  color: getTypeColor(PokeDetails?.types[0]),
                   fontWeight: 'bold',
                   marginTop: 20,
                 }}>
@@ -288,8 +321,8 @@ const DetailsPoke = () => {
                         progress={value / 250}
                         width={270}
                         height={10}
-                        color={'#dc0a2d'}
-                        style={{alignSelf: 'flex-start'}}
+                        color={getTypeColor(PokeDetails?.types[0])}
+                        style={{alignSelf: 'flex-start', top: 5, left: 8}}
                       />
                     </View>
                   ),
