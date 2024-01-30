@@ -188,7 +188,7 @@ const DetailsPoke = () => {
                 marginVertical: 10,
                 color: '#fff',
                 fontSize: 25,
-                right: 20,
+                right: 40,
               }}>
               #{PokeDetails?.id}
             </Text>
@@ -253,41 +253,55 @@ const DetailsPoke = () => {
                   flexDirection: 'row',
                   marginTop: 10,
                   marginBottom: 20,
+                  marginHorizontal: 25,
                 }}>
                 <View style={{flex: 1}}>
                   <Image
-                    style={{left: 20, top: 2}}
+                    style={{left: 12, top: 2}}
                     source={require('../../pics/weight.png')}
                   />
                   <View style={{position: 'absolute', alignSelf: 'center'}}>
-                    <Text>{PokeDetails?.weight / 10} kg</Text>
+                    <Text style={{fontWeight: 'bold'}}>
+                      {PokeDetails?.weight / 10} kg
+                    </Text>
                   </View>
                   <Text></Text>
-                  <Text style={{alignSelf: 'center'}}>Weight</Text>
+                  <Text style={{alignSelf: 'center', fontSize: 13}}>
+                    Weight
+                  </Text>
                 </View>
                 <Image source={require('../../pics/divider.png')} />
                 <View style={{flex: 1}}>
                   <Image
-                    style={{left: 20, top: 2}}
+                    style={{left: 18, top: 2}}
                     source={require('../../pics/straighten.png')}
                   />
                   <View style={{position: 'absolute', alignSelf: 'center'}}>
-                    <Text>{PokeDetails?.height / 10} m</Text>
+                    <Text style={{fontWeight: 'bold'}}>
+                      {PokeDetails?.height / 10} m
+                    </Text>
                   </View>
                   <Text></Text>
-                  <Text style={{alignSelf: 'center'}}>Height</Text>
+                  <Text style={{alignSelf: 'center', fontSize: 13}}>
+                    Height
+                  </Text>
                 </View>
                 <Image source={require('../../pics/divider.png')} />
                 <View style={{marginLeft: 20, flex: 1}}>
-                  <View style={{alignSelf: 'center'}}>
-                    <Text>{PokeDetails?.moves.join('\n')}</Text>
-                  </View>
-                  <Text style={{alignSelf: 'center'}}>Moves</Text>
+                  <Text
+                    style={{
+                      textTransform: 'capitalize',
+                      textAlign: 'center',
+                      fontWeight: 'bold',
+                    }}>
+                    {PokeDetails?.moves.join('\n')}
+                  </Text>
+                  <Text style={{alignSelf: 'center', fontSize: 13}}>Moves</Text>
                 </View>
               </View>
 
               <ScrollView
-                style={{width: '100%', height: 60, marginVertical: 16}}>
+                style={{width: '100%', height: 50, marginVertical: 16}}>
                 <Text style={{marginHorizontal: 16, marginVertical: 10}}>
                   {speciesDetails}
                 </Text>
@@ -298,11 +312,11 @@ const DetailsPoke = () => {
                   fontSize: 20,
                   color: getTypeColor(PokeDetails?.types[0]),
                   fontWeight: 'bold',
-                  marginTop: 20,
+                  marginTop: 15,
                 }}>
                 Base Stats:
               </Text>
-              <View style={{marginTop: 10}}>
+              <View style={{marginTop: 10, marginHorizontal: 16}}>
                 {Object.entries(PokeDetails?.baseStats || {}).map(
                   ([stat, value]) => (
                     <View
@@ -313,13 +327,38 @@ const DetailsPoke = () => {
                         justifyContent: 'space-between',
                         marginBottom: 8,
                       }}>
-                      <Text>{`${stat}: ${String(value).padStart(
-                        3,
-                        '0',
-                      )}`}</Text>
+                      <View>
+                        <Text
+                          style={{
+                            fontWeight: 'bold',
+                            fontSize: 16,
+                            color: getTypeColor(PokeDetails?.types[0]),
+                          }}>{` ${stat} `}</Text>
+                        <View
+                          style={{
+                            marginLeft: 45,
+                            width: 5,
+                            height: 25,
+                            position: 'absolute',
+                          }}>
+                          <Image
+                            source={require('../../pics/divider.png')}
+                            style={{
+                              width: 5,
+                              height: 20,
+                            }}
+                          />
+                        </View>
+                      </View>
+
+                      <View>
+                        <Text style={{marginLeft: 10}}>{` ${String(
+                          value,
+                        ).padStart(3, '0')}`}</Text>
+                      </View>
                       <Bar
                         progress={value / 250}
-                        width={270}
+                        width={250}
                         height={10}
                         color={getTypeColor(PokeDetails?.types[0])}
                         style={{alignSelf: 'flex-start', top: 5, left: 8}}
