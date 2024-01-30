@@ -14,7 +14,6 @@ import { useNavigation } from '@react-navigation/native';
 import { RadioButton } from 'react-native-paper';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import axios from 'axios';
-import DetailsPoke from '../list-details-poke/list-details-poke.screen';
 
 interface PokeProps {
   id: number;
@@ -30,12 +29,13 @@ const ListPoke = () => {
   const [sortBy, setSortBy] = useState<string>('number');
   const [checkbox, setCheckBox] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadData, setLoadData] = useState(false);
   // let [offset, setOffset] = useState(0);
   
 
   const fetchMorePokes = async () => {
     try {
-      // setLoading(true);
+      setLoading(true);
       // console.log(offset)
       const response = await axios.get(
         `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=20`
@@ -56,14 +56,17 @@ const ListPoke = () => {
     } catch (error) {
       console.error('Error:', error);
     } 
-    // finally {
-    //   setLoading(false);
-    // }
+    finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
+    if(!loadData){
     fetchMorePokes();
-  }, []);
+    setLoadData(true);
+    }
+  }, [loadData]);
 
   const sortPokes = (pokesToSort: PokeProps[]) => {
     return pokesToSort.sort((a, b) => {
