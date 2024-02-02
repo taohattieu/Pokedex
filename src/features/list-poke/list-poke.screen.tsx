@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -9,20 +9,25 @@ import {
   StyleSheet,
   Modal,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { RadioButton } from 'react-native-paper';
+import {useNavigation} from '@react-navigation/native';
+import {RadioButton} from 'react-native-paper';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import axios from 'axios';
+
+const windowWidth = Dimensions.get('window').width;
 
 interface PokeProps {
   id: number;
   name: string;
   image: string;
 }
-let offset = 0
+
+let offset = 0;
+
 const ListPoke = () => {
-  const { navigate } = useNavigation<any>();
+  const {navigate} = useNavigation<any>();
   const [pokes, setPokes] = useState<PokeProps[]>([]);
   const [searchText, setSearchText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -30,41 +35,35 @@ const ListPoke = () => {
   const [checkbox, setCheckBox] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadData, setLoadData] = useState(false);
-  // let [offset, setOffset] = useState(0);
-  
 
   const fetchMorePokes = async () => {
     try {
       setLoading(true);
-      // console.log(offset)
       const response = await axios.get(
-        `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=20`
+        `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=20`,
       );
-      const newPokes = response.data.results.map((poke: any, index: number) => ({
-        id: index + offset + 1,
-        name: poke.name,
-        image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${
-          index + offset + 1
-        }.png`,
-        
-      }));
-      setPokes((prevPokes) => [...prevPokes, ...newPokes]);
-      // console.log(newPokes)
-      // setOffset((prevOffset) => prevOffset += 20);
-      offset += 20
-      // console.log(offset)
+      const newPokes = response.data.results.map(
+        (poke: any, index: number) => ({
+          id: index + offset + 1,
+          name: poke.name,
+          image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${
+            index + offset + 1
+          }.png`,
+        }),
+      );
+      setPokes(prevPokes => [...prevPokes, ...newPokes]);
+      offset += 20;
     } catch (error) {
       console.error('Error:', error);
-    } 
-    finally {
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if(!loadData){
-    fetchMorePokes();
-    setLoadData(true);
+    if (!loadData) {
+      fetchMorePokes();
+      setLoadData(true);
     }
   }, [loadData]);
 
@@ -79,38 +78,34 @@ const ListPoke = () => {
     });
   };
 
-  const renderItem = ({ item }: { item: PokeProps }) => (
-    <View>
+  const renderItem = ({item}: {item: PokeProps}) => (
+    <View style={{flex: 1 / 3}}>
       <TouchableOpacity
         onPress={() => {
-          navigate('DetailsPoke', { id: item.id });
+          navigate('DetailsPoke', {id: item.id});
         }}>
         <View
           style={{
             borderRadius: 10,
             borderWidth: 0.5,
-            marginVertical: 16,
-            marginHorizontal: 14,
-            width: 104,
-            height: 115,
+            marginVertical: windowWidth * 0.01,
+            marginHorizontal: windowWidth * 0.01,
+            width: windowWidth * 0.3,
+            height: windowWidth * 0.32,
             backgroundColor: '#ffffff',
           }}>
-          <Text
-            style={{
-              textAlign: 'right',
-              marginRight: 10,
-            }}>
+          <Text style={{textAlign: 'right', marginRight: windowWidth * 0.02}}>
             #{item.id}
           </Text>
           <Image
-            source={{ uri: item.image }}
+            source={{uri: item.image}}
             style={{
-              width: 72,
-              height: 72,
-              marginLeft: 16,
+              width: windowWidth * 0.2,
+              height: windowWidth * 0.2,
+              marginLeft: windowWidth * 0.04,
             }}
           />
-          <Text style={{ textAlign: 'center', textTransform: 'capitalize' }}>
+          <Text style={{textAlign: 'center', textTransform: 'capitalize'}}>
             {item.name}
           </Text>
           <View
@@ -120,7 +115,7 @@ const ListPoke = () => {
               bottom: 0,
               borderRadius: 10,
               width: '100%',
-              height: 50,
+              height: windowWidth * 0.125,
               zIndex: -1,
               opacity: 1,
             }}
@@ -131,61 +126,62 @@ const ListPoke = () => {
   );
 
   const filteredPokes = pokes.filter(
-    (poke) =>
+    poke =>
       poke.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      poke.id.toString().includes(searchText)
+      poke.id.toString().includes(searchText),
   );
 
   const sortedPokes = sortPokes(filteredPokes);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#dc0a2d' }}>
-      <View style={{ flex: 1 }}>
-        <Image
-          source={require('../../pics/Logo.png')}
-          style={{ marginVertical: 16, marginHorizontal: 16 }}
-        />
+    <View style={{flex: 1, backgroundColor: '#dc0a2d'}}>
+      <Image
+        source={require('../../pics/Logo.png')}
+        style={{
+          marginVertical: windowWidth * 0.04,
+          marginHorizontal: windowWidth * 0.04,
+        }}
+      />
 
-        <View>
-          <View style={{ flexDirection: 'row' }}>
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: '#ffffff',
-                marginHorizontal: 16,
-                borderRadius: 25,
-              }}>
-              <TextInput
-                placeholder="Search"
-                style={{
-                  marginHorizontal: 20,
-                  paddingLeft: 20,
-                  backgroundColor: '#ffffff',
-                }}
-                value={searchText}
-                onChangeText={(text) => setSearchText(text)}
-              />
-            </View>
-            <EvilIcons
-              name="search"
-              size={30}
-              style={{
-                position: 'absolute',
-                marginHorizontal: 16,
-                marginVertical: 10,
-                color: '#DC0A2D',
-              }}
-            />
-            <View
-              style={{
-                borderRadius: 30,
-                borderWidth: 0.5,
-                backgroundColor: '#fff',
-                width: 50,
-                height: 50,
-                marginRight: 16,
-              }}>
-              <Modal
+      <View style={{flexDirection: 'row'}}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: '#ffffff',
+            marginHorizontal: windowWidth * 0.04,
+            borderRadius: 25,
+          }}>
+          <TextInput
+            placeholder="Search"
+            style={{
+              marginHorizontal: windowWidth * 0.06,
+              marginVertical: windowWidth * 0.0002,
+              paddingLeft: windowWidth * 0.05,
+            }}
+            value={searchText}
+            onChangeText={text => setSearchText(text)}
+          />
+          <EvilIcons
+            name="search"
+            size={30}
+            style={{
+              position: 'absolute',
+              marginHorizontal: windowWidth * 0.02,
+              marginVertical: windowWidth * 0.02,
+              color: '#DC0A2D',
+            }}
+          />
+        </View>
+        <View
+          style={{
+            borderRadius: 30,
+            borderWidth: 0.5,
+            backgroundColor: '#fff',
+            width: windowWidth * 0.12,
+            height: windowWidth * 0.12,
+            marginRight: windowWidth * 0.04,
+          }}>
+          <Modal
                 animationType="fade"
                 transparent={true}
                 visible={modalVisible}
@@ -272,36 +268,34 @@ const ListPoke = () => {
                   </View>
                 </View>
               </Modal>
-              <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <Text
-                  style={{
-                    fontSize: 30,
-                    color: '#dc0a2d',
-                    textAlign: 'center',
-                    textAlignVertical: 'center',
-                  }}>
-                  #
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <Text
+              style={{
+                fontSize: windowWidth * 0.1,
+                color: '#dc0a2d',
+                textAlign: 'center',
+                // textAlignVertical: 'center',
+                bottom: 5
+              }}>
+              #
+            </Text>
+          </TouchableOpacity>
         </View>
-
-        <FlatList
-          data={filteredPokes}
-          numColumns={3}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItem}
-          style={{
-            backgroundColor: '#ffffff',
-            marginVertical: 16,
-            marginHorizontal: 10,
-            borderRadius: 10,
-          }}
-          onEndReached={fetchMorePokes}
-          
-        />
       </View>
+
+      <FlatList
+        data={filteredPokes}
+        numColumns={3}
+        keyExtractor={item => item.id.toString()}
+        renderItem={renderItem}
+        style={{
+          backgroundColor: '#ffffff',
+          marginVertical: windowWidth * 0.04,
+          marginHorizontal: windowWidth * 0.02,
+          borderRadius: 10,
+        }}
+        onEndReached={fetchMorePokes}
+      />
     </View>
   );
 };

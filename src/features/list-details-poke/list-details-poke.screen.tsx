@@ -41,12 +41,12 @@ const DetailsPoke = () => {
           front_default: data.sprites.other['official-artwork'].front_default,
         },
         baseStats: {
-          HP: data.stats[0].base_stat,
-          ATK: data.stats[1].base_stat,
-          DEF: data.stats[2].base_stat,
+          HP:   data.stats[0].base_stat,
+          ATK:  data.stats[1].base_stat,
+          DEF:  data.stats[2].base_stat,
           SATK: data.stats[3].base_stat,
           SDEF: data.stats[4].base_stat,
-          SPD: data.stats[5].base_stat,
+          SPD:  data.stats[5].base_stat,
         },
       });
     } catch (error) {
@@ -257,7 +257,7 @@ const DetailsPoke = () => {
                 }}>
                 <View style={{flex: 1}}>
                   <Image
-                    style={{left: 12, top: 2}}
+                    style={{left: 5, top: 2}}
                     source={require('../../pics/weight.png')}
                   />
                   <View style={{position: 'absolute', alignSelf: 'center'}}>
@@ -273,7 +273,7 @@ const DetailsPoke = () => {
                 <Image source={require('../../pics/divider.png')} />
                 <View style={{flex: 1}}>
                   <Image
-                    style={{left: 18, top: 2}}
+                    style={{left: 10, top: 2}}
                     source={require('../../pics/straighten.png')}
                   />
                   <View style={{position: 'absolute', alignSelf: 'center'}}>
@@ -331,7 +331,7 @@ const DetailsPoke = () => {
                         <Text
                           style={{
                             fontWeight: 'bold',
-                            fontSize: 16,
+                            fontSize: 15,
                             color: getTypeColor(PokeDetails?.types[0]),
                           }}>{` ${stat} `}</Text>
                         <View
@@ -344,8 +344,8 @@ const DetailsPoke = () => {
                           <Image
                             source={require('../../pics/divider.png')}
                             style={{
-                              width: 5,
-                              height: 20,
+                              width: 2,
+                              height: '120%',
                             }}
                           />
                         </View>
@@ -353,7 +353,7 @@ const DetailsPoke = () => {
 
                       <View>
                         <Text style={{marginLeft: 10}}>{` ${String(
-                          value,
+                        value,
                         ).padStart(3, '0')}`}</Text>
                       </View>
                       <Bar
